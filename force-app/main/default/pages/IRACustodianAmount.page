@@ -1,0 +1,18 @@
+<apex:page standardController="IRA_Queue__c" lightningStylesheets="true">
+    <apex:form >
+      <apex:pageBlock title="">
+          <apex:pageBlockSection title="Data" collapsible="true" columns="1">
+              <apex:inputField value="{!IRA_Queue__c.Total_Account_Value__c}" html-disabled="true"/>
+              <apex:inputField value="{!IRA_Queue__c.Transfer_Roll_Over_value__c}" html-disabled="true"/>
+              <apex:inputField value="{!IRA_Queue__c.Remaining_account_Value__c}" html-disabled="true"/>
+              <apex:inputField value="{!IRA_Queue__c.Waiting_on_fund__c}" html-disabled="true"/>
+              <apex:inputField value="{!IRA_Queue__c.IRA_Kicked__c}" html-disabled="true"/>
+              <apex:inputField value="{!IRA_Queue__c.IRA_Fees__c}" html-disabled="true"/>
+              <apex:inputField value="{!IRA_Queue__c.Total_Lock_Value__c}" html-disabled="true"/>
+              <apex:inputField value="{!IRA_Queue__c.Paperwork_Only__c}" html-disabled="true"/>
+              <apex:inputField value="{!IRA_Queue__c.Verbal_Authentication__c}" html-disabled="true"/>
+              <apex:inputField value="{!IRA_Queue__c.Reload__c}" html-disabled="true"/>
+          </apex:pageBlockSection>
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

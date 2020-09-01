@@ -1,0 +1,181 @@
+<apex:page standardController="Purchase_Order__c"
+            applyBodyTag="false"
+            showHeader="false"
+            sidebar="false"
+            renderAs="pdf">
+    
+    <head>
+        <title>Customer Invoice</title>
+        <style>
+            @page {
+                size: 215.9mm 279.4mm;
+                margin: 22px;
+                margin-top: 180px;
+                margin-bottom: 70px;
+                @top-center {
+                    content: element(header);
+                }
+                @bottom-left {
+                    content: element(footer);
+                }
+            }
+            .page:before {
+                content: counter(page);
+            }
+            .pages:after {
+                content: counter(pages);
+            } 
+            div.header {
+                padding-top: 18px;
+                position: running(header);
+            }
+            
+            div.footer {
+                padding-bottom: 18px;
+                position: running(footer);
+            }
+            
+            .bold_text{
+                font-weight: bold;
+                line-height: 15px;
+            }
+            
+            hr{
+            	width: 90%;
+            	align: center;
+            }
+            
+            .total{
+            	background-color: black;
+            	color: white;
+            }
+            
+            thead tr {
+            	background-color: #a4742c;
+            	color: white;
+            	text-align: center;
+            }
+            
+            th.all_border, td.all_border{
+            	border: 1px solid white;
+            	padding-right: 6px;
+            	padding-left: 6px;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="header">
+            <table cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td width="37.5%" valign="top" align="left">&nbsp;</td>
+                    <td width="25%" valign="center">
+                        <img width="100%" src="{!URLFOR($Resource.LogoBG)}" />
+                    </td>
+                    <td width="37.5%" valign="top" align="left">&nbsp;</td>
+                </tr>
+            </table>
+            <br/>
+            <h1 style="text-align: center;">
+                Invoice
+            </h1>
+        </div>
+        
+        <div>
+            <table cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td width="40%">
+                        <span class="bold_text">Order Number: </span> {!Purchase_Order__c.Name}
+                    </td>
+                    <td width="20%" valign="center">&nbsp;</td>
+                    <td width="40%" align="right">
+                        <span class="bold_text">Date:</span> <apex:outputText value="{0, date, M'/'d'/'yyyy}"><apex:param value="{!today()}" /></apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="50%"><br/></td>
+                </tr>
+                <tr>
+                    <td width="50%">
+                        <span class="bold_text">Customer Information</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="50%"><br/></td>
+                </tr>
+                <tr>
+                    <td width="60%">{!Purchase_Order__c.Contact__r.Name}</td>
+                </tr>
+                <tr>
+                    <td width="60%">{!Purchase_Order__c.Client__r.BillingStreet}
+                        <br/> {!Purchase_Order__c.Client__r.BillingCity}, {!Purchase_Order__c.Client__r.BillingState} {!Purchase_Order__c.Client__r.BillingPostalCode}
+                    </td>
+                </tr>
+                <tr>
+                    <td width="60%">{!Purchase_Order__c.Client__r.Account_Number__c}</td>
+                </tr>
+                <tr>
+                    <td width="50%"><br/></td>
+                </tr>
+                <tr>
+                    <td width="50%"><span class="bold_text">Customer Account: </span>{!Purchase_Order__c.Client__r.Id}</td>
+                </tr>
+            </table>
+        </div>
+        <br/><br/><br/>
+        <div>
+            <table border="0" cellspacing="0" width="100%" class="items">
+                <thead>
+                        <tr>
+                            <th class="all_border" width="14%">Quantity</th>
+                            <th class="all_border" width="26%">Coin</th>
+                            <th class="all_border" width="15%">Grade</th>
+                            <th class="all_border" width="20%">Unit Price</th>
+                            <th class="all_border" width="25%">Total Price</th>
+                        </tr>
+             	</thead>
+                <tbody>
+                    <apex:repeat value="{!Purchase_Order__c.Purchase_Order_Line_Items__r}" var="poli" >                   
+                            <tr>
+                                <td  class="all_border" align="right">{!poli.Quantity__c}</td>
+                                <td  class="all_border">{!poli.Coin__r.Name}</td>
+                                <td  class="all_border">{!poli.Grade__c}</td>
+                                <td  class="all_border" align="right"><apex:outputText value="${0, number,###,##0.00}"><apex:param value="{!poli.Unit_Price__c}" /></apex:outputText></td>
+                                <td  class="all_border" align="right"><b><apex:outputText value="${0, number,###,##0.00}"><apex:param value="{!poli.Total_Price__c}" /></apex:outputText></b></td>
+                            </tr>
+                    </apex:repeat>
+                	<tr style="height: 20px"></tr>
+                    <tr class="total">
+                        <td width="14%">&nbsp;</td>
+                        <td width="26%">&nbsp;</td>
+                        <td width="15%">&nbsp;</td>
+                    	<td width="20%" align="center">&nbsp;<b>Total: </b></td>
+                        <td width="25%" align="right" style="padding-right: 6px;"><apex:outputText value="${0, number,###,##0.00}"><apex:param value="{!Purchase_Order__c.Total_Price__c}" /></apex:outputText></td>
+                   	</tr>    
+                </tbody>
+            </table>
+        </div>
+        
+        <br/><br/><br/>
+        
+        <div>
+            <p>
+                The Birch Shipping and Transaction (Agreement) that you signed governs the terms of this sale. With limited exceptions set forth in the Agreement, ALL SALES
+                 ARE FINAL.
+            </p>
+            <p>
+                Past performance is no guarantee of future results, in Birch Gold Group's (BGG) opinion, (i) Precious Metals should be considered a long-term investment, and
+                 (ii) you should be prepared to hold any Precious Metal purchased for at least a three to five-year period, and preferably five to ten years to maximize the potential
+                 for gains.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <hr/>
+            <p style="text-align: center;">
+                3500 West Olive Ave., Suite 730, Burbank, CA 951505 | (800) 355-2116 | www.BirchGold.com
+            </p>
+        </div>
+    </body>
+    
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page standardController="IRA_Queue__c" extensions="CreatePurchaseOrder" action="{!createPurchaseOrder}">
+<apex:form >
+</apex:form>
+</apex:page>

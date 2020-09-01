@@ -1,0 +1,1047 @@
+<apex:page standardController="IRA_Queue__c"
+    extensions="PTC_Transfer_PDF_Controller"
+    applyBodyTag="false"
+    showHeader="false"
+    sidebar="false"
+    renderAs="pdf"
+>
+<head>
+    <title>PTC Transfer</title>
+    <style>
+        @media print {
+            html, body,input{margin: 0; padding: 0; font-family: Helvetica, sans-serif}
+        }
+        @page{
+            margin: 30px 22px;
+            margin-bottom: 50px;
+            @bottom-left {
+                content: element(footer);
+            }
+        }
+        div.footer {
+            padding-bottom: 30px;
+            position: running(footer);
+        }
+        .nropage:before {
+            content: counter(page);
+        }
+        .pages:after {
+            content: counter(pages);
+        } 
+        .page{height: 100%; width: 100%; page-break-after: always;}
+        .background{background-color:#007491; color: #fff}
+        .title_header{
+            font-size: 15pt;
+            font-weight: 600;
+            color: #808080;
+        }
+        .gray{color: #808080;}
+        .form{font-size: 9pt; width: 100%}
+        .form tr{ height: 28px;}
+        .onlyradio tr{height: 24px;!important}
+        .form tr td{padding: 0 5px;color: #000;}
+        td.input_change{ 
+            background-color: #F1F4FF; 
+            border-top: 1px solid #A0A3AD;  
+            border-left: 1px solid #A0A3AD;  
+            border-right: 1px solid #E9EBF4; 
+            border-bottom: 1px solid #E9EBF4;
+            color: #5E616B;
+        }
+        td.input_change div{width: 100%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+        tr.section_header{
+            background-color: #007491;
+            color: #fff;
+            font-size: 13pt;
+            height: 35px;
+            padding-bottom: 5px;
+        }
+        tr.section_header td{
+            padding-left: 10px;
+            padding-top: 10px;
+        }
+        tr.section_header b{
+            font-size: 12pt;
+        }
+        tr.line_blank{height:12px;}
+        .radio{width:18px;}
+        .check{width:16px;}
+        table.mini p{margin:3px 0;text-align: justify;text-align-last: auto;}
+        td.extend p{margin:10px 0;text-align: justify;text-align-last: auto;}
+        a{color:#007491};
+    </style>
+</head>
+<body>
+    <apex:pageMessages id="showmsg"></apex:pageMessages>
+    <apex:outputText rendered="{! !Errors }">
+    <div class="footer">
+        <table class="form">
+            <tr align="center">
+                <td width="90%"></td>
+                <td class="input_change nropage"></td>
+                <td> of </td>
+                <td class="input_change pages"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="page">
+        <table>
+            <tr style="height:950px" >
+                <td valign="center" >
+                    <table>
+                        <tr>
+                            <td width="15%" style="padding-right: 13px;"><img src="{!URLFOR($Resource.Logo_pdf)}" width="90%"/></td>
+                            <td width="85%" class="background" align="justify" style="padding: 10px;">
+                                <p>This page has intentionally been left blank. </p>
+                                <p>The execute <b>Application</b> above can be sent to Preferred Trust Company as a scanned or faxed copy. The
+                                    Transfer or Conversion Form and Pre-Consent E-Sign Authorization Disclosure Form below must be sent
+                                    to Preferred Trust Company as an original.</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>            
+    </div>
+    
+    <div class="page">
+        <table width="98%" style="margin-left: 5px;">   
+            <tr>
+                <td width="9%"><img src="{!URLFOR($Resource.Logo_pdf)+'?left'}" style="width: 100%;"/></td>
+                <td width="51%" style="padding-left: 5px; font-size: 11pt;">
+                    <br/><b>Client Services</b><span class="gray"> | 888.990.7892</span><br/>
+                    <small class="gray"><b style="color: #000">E.</b> info@ptcemail.com<br/>
+                    <b style="color: #000">F</b>. 702.946.0136<br/>
+                    <b style="color: #000">W</b>. www.preferredtrustcompany.com<br/>
+                    2140 E. Pebble Road, Suite 140<br/>
+                    Las Vegas, NV 89123<br/></small>
+                </td>
+                <td valign="top" align="right" class="gray">
+                    <span class="title_header">Transfer or Conversion Form</span><br/>
+                    <span>Traditional | Roth | SEP | SIMPLE</span><br/>
+                    <table class="form" width="100%" style="margin-top: 8px;">
+                        <tr>
+                            <td width="60%">PTC IRA Account Number</td>
+                            <td width="40%" class="input_change"></td>
+                        </tr>
+                    </table>
+                    
+                </td>
+            </tr>
+        </table>
+        <br/>
+        <table width="100%">
+            <tr class="section_header"><td><b>SECTION 1</b> | IRA Account Owner Information</td></tr>
+            <tr class="line_blank"></tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td width="10%">First Name</td>
+                            <td width="36%" class="input_change"><div>{!PrimaryObject.Contact__r.FirstName}</div></td>
+                            <td width="4%">Initial</td>
+                            <td width="5%" class="input_change"><div>{!PrimaryObject.Contact__r.MiddleName}</div></td>
+                            <td width="10%">Last Name</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Contact__r.LastName}</div></td>
+                        </tr>
+                    </table>
+                </td>
+                
+            </tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td width="5%">SSN</td>
+                            <td width="20%" class="input_change"><div>{!PrimaryObject.Contact__r.SSN__c}</div></td>
+                            <td width="15%">DOB (MM/DD/YY)</td>
+                            <td width="14%" class="input_change"><div> <apex:outputText value="{0, date, M'/'d'/'yyyy}"><apex:param value="{!PrimaryObject.Contact__r.D_O_B__c}" /></apex:outputText></div></td>
+                            <td width="5%">Email</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Contact__r.Email}</div></td>
+                        </tr>
+                    </table>
+                </td>
+                
+            </tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td width="13%">Phone Number</td>
+                            <td width="30%" class="input_change" align="center"><div>{!PrimaryObject.Contact__r.Phone}</div></td>
+                            <td width="18%">Cell Phone Number</td>
+                            <td width="" class="input_change" align="center"><div>{!PrimaryObject.Contact__r.MobilePhone}</div></td>
+                        </tr>
+                    </table>
+                </td>
+                
+            </tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td width="12%">Street Address</td>
+                            <td width="30%" class="input_change"><div>{!PrimaryObject.Contact__r.MailingStreet}</div></td>
+                            <td width="4%">City</td>
+                            <td width="20%" class="input_change"><div>{!PrimaryObject.Contact__r.MailingCity}</div></td>
+                            <td width="5%">State</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Contact__r.MailingState}</div></td>
+                            <td width="8%">Zip Code</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Contact__r.MailingPostalCode}</div></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr class="section_header"><td><b>SECTION 2</b> | Account Type</td></tr>
+            <tr><!-- fields --><!-- Radio -->
+                <td>
+                    <table class="form" style="width:82%!important">
+                        <tr>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, iF(contains(PrimaryObject.Account_Type__c,'Traditional'),'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td>Traditional IRA</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, iF(contains(PrimaryObject.Account_Type__c,'Roth'),'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td>Roth IRA</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, iF(contains(PrimaryObject.Account_Type__c,'SEP'),'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td>SEP IRA</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, iF(contains(PrimaryObject.Account_Type__c,'SIMPLE'),'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td>SIMPLE IRA</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, iF(contains(PrimaryObject.Account_Type__c,'Inherited'),'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td>Inherited IRA</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                
+            </tr>
+            <tr class="section_header"><td><b>SECTION 3</b> | Transfer From Information </td></tr>
+            <tr class="line_blank"></tr>
+            <tr><!-- Text -->
+                <td>
+                   <span style="color:#007491;font-size:9pt;font-family:sans-serif;">Preferred Trust Company requires a photocopy of a <b><u>current statement</u></b> from the Custodian the funds are being transferred from.</span>
+                </td>
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td width="15%">Custodian Name</td>
+                            <td width="45%" class="input_change"><div>{!PrimaryObject.Custodian_name__r.Name}</div></td>
+                            <td width="18%">Client Account Number</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Custodian_Client_Account_Number__c}</div></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td width="14%">Street Address</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Custodian_name__r.Account.BillingStreet}</div></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td width="4%">City</td>
+                            <td width="60%" class="input_change"><div>{!PrimaryObject.Custodian_name__r.Account.BillingCity}</div></td>
+                            <td width="5%">State</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Custodian_name__r.Account.BillingState}</div></td>
+                            <td width="8%">Zip Code</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Custodian_name__r.Account.BillingPostalCode}</div></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form" style="width:50%!important">
+                        <tr>
+                            <td width="27%">Phone Number</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Custodian_name__r.Phone}</div></td>
+                        </tr>
+                    </table>
+                </td>   
+            </tr>
+            <tr class="line_blank"></tr>      
+            <tr class="section_header"><td><b>SECTION 4</b> | Type of Transaction <span style="font-size: 8pt;">(See Additional Information included with this form.)</span></td></tr>
+            <tr class="line_blank"></tr>
+            <tr><!-- text -->
+                <td>
+                    <table style="width:75%!important">
+                        <tr>
+                            <td width="30%" style="font-size:8pt;">A. <b>Transfer</b>: (check one)</td>
+                            <td width=""  style="font-size:8pt;">
+                                <b>[SIMPLE IRA cannot be transferred to a Traditional IRA or converted to a<br/>
+                                Roth IRA for 2 years following the date of the initial SIMPLE contribution.]</b>
+                            </td>
+                        </tr>
+                    </table>
+                </td>   
+            </tr>
+            <tr><!-- fields --> <!-- check -->
+                <td>
+                    <table class="form" style="width:87%;font-size:8pt;">
+                        <tr>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Transfer__c,'Traditional IRA to a Traditional IRA'),'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>Traditional IRA to a Traditional IRA</td>
+                                    </tr>
+                                </table>
+                            </td>                            
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Transfer__c,'Traditional IRA to a SEP IRA'),'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>Traditional IRA to a SEP IRA</td>
+                                    </tr>
+                                </table>
+                            </td>                            
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Transfer__c,'Roth IRA to a Roth IRA'),'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>Roth IRA to a Roth IRA</td>
+                                    </tr>
+                                </table>
+                            </td>                            
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Transfer__c,'SEP IRA to a SEP IRA'),'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>SEP IRA to a SEP IRA</td>
+                                    </tr>
+                                </table>
+                            </td>                            
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Transfer__c,'SEP IRA to a Traditional IRA'),'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>SEP IRA to a Traditional IRA</td>
+                                    </tr>
+                                </table>
+                            </td>                        
+                        </tr>
+                        <tr>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Transfer__c,'SIMPLE IRA to a SEP IRA'),'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>SIMPLE IRA to a SEP IRA</td>
+                                    </tr>
+                                </table>
+                            </td>                            
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Transfer__c,'SIMPLE IRA to a Traditional IRA'),'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>SIMPLE IRA to a Traditional IRA</td>
+                                    </tr>
+                                </table>
+                            </td>                            
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Transfer__c,'SIMPLE IRA to a SIMPLE IRA'),'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>SIMPLE IRA to a SIMPLE IRA</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td valign="center" colspan="2">
+                                <table width="100%">
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Transfer__c,'Other'),'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>Other</td>
+                                        <td width="80%" class="input_change"><div>{!if(contains(PrimaryObject.Transfer__c,'Other') , PrimaryObject.Other_Transfer__c, '')}</div></td>
+                                    </tr>
+                                </table>
+                            </td>                        
+                        </tr>
+                    </table>
+                </td>   
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr><!-- text -->
+                <td>
+                    <table style="width:75%!important">
+                        <tr>
+                            <td width="30%" style="font-size:8pt;">A. <b>Conversion</b>: (check one)</td>
+                            <td width=""  style="font-size:8pt;">
+                                <b>[Required Minimum Distributions (RMD) cannot be converted to a Roth IRA.]</b>
+                            </td>
+                        </tr>
+                    </table>
+                </td>   
+            </tr>
+            <tr><!-- fields --> <!-- check -->
+                <td>
+                    <table class="form" style="font-size:8pt;width:87%">
+                        <tr>
+                            <td valign="center" width="22%">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Conversion__c,'SIMPLE IRA to a Roth IRA') ,'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>SIMPLE IRA to a Roth IRA</td>
+                                    </tr>
+                                </table>
+                            </td>                            
+                            <td valign="center" width="22%">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Conversion__c,'Traditional IRA to a Roth IRA') ,'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>Traditional IRA to a Roth IRA</td>
+                                    </tr>
+                                </table>
+                            </td>                            
+                            <td valign="center" width="22%">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Conversion__c,'SEP IRA to a Roth IRA') ,'checktrue.png' , 'checkfalse.png') )}" class="check"/></td>
+                                        <td>SEP IRA to a Roth IRA</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td valign="center" width="25%"></td>
+                            <td valign="center" width="25%"></td>
+                        </tr>
+                    </table>
+                    <table style="font-size:8pt;">
+                        <tr>                          
+                            <td valign="center" width="40%">
+                                <table>
+                                    <tr valign="center">
+                                        <td width="81.5%">If applicable, the required minimum distribution</td>
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(PrimaryObject.Required_Minimum_Distribution_has__c ,'checktrue.png', 'checkfalse.png') )}" class="check"/></td>
+                                        <td>has or</td>
+                                    </tr>
+                                </table>
+                            </td>                            
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(PrimaryObject.Required_Minimum_Distribution_has_not__c ,'checktrue.png', 'checkfalse.png') )}" class="check"/></td>
+                                        <td>has not been satisfied for this distribution year prior to this transfer. If not, the transferee custodian/trustee may require additional documentation.</td>
+                                    </tr>
+                                </table>
+                            </td>                        
+                        </tr>
+                    </table>
+                </td>   
+            </tr>
+        </table>
+    </div>
+
+    <div class="page">
+        <table width="100%">
+            <tr class="section_header"><td><b>SECTION 5</b> | Transfer or Conversion Instructions</td></tr>
+            <tr><!-- Text -->
+                <td>
+                   <span style="color:#007491;font-size:8.5pt;font-family:sans-serif;">Complete my transfer/conversion as directed. Note: Penalties and market fluctuation may affect the distribution amount of investments held by your IRA.</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table width="45%">
+                        <tr style="height:25px;">
+                            <td valign="center" style="background-color:#C0C0C0;padding:5px;"><span style="color:#007491;font-size:9pt;font-family:sans-serif;"><b>CASH</b> | You must select an option from this section.</span></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>            
+            <tr><!-- fields --><!-- Radio -->
+                <td>
+                    <table class="form" style="width:60%!important">
+                        <tr>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Cash_transfer__c,'My entire cash balance'), 'radiotrue.png' ,'radiofalse.png') )}" class="radio"/></td>
+                                        <td>My entire cash balance only.</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="center">
+                                <table> 
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Cash_transfer__c,'A portion of my cash balance'), 'radiotrue.png' ,'radiofalse.png') )}" class="radio"/></td>
+                                        <td>A portion of my cash balance totaling:</td>
+                                        <td width="45%" class="input_change"><div>{!if(contains(PrimaryObject.Cash_transfer__c,'A portion of my cash balance'),PrimaryObject.Portion_of_cash_balance_Total__c, '' ) }</div></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Cash_transfer__c,'My entire cash balance and investments as described below'), 'radiotrue.png' ,'radiofalse.png') )}" class="radio"/></td>
+                                        <td>My entire cash balance <b>and</b> the investments as described below.</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>                
+            </tr>
+            <tr><!-- Text -->
+                <td>
+                    <table width="45%">
+                        <tr style="height:25px;">
+                            <td valign="center" style="background-color:#C0C0C0;padding:5px;"><span style="color:#007491;font-size:9pt;font-family:sans-serif;"><b>INVESTMENTS</b> | You must select an option from this section.</span></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>            
+            <tr><!-- fields --><!-- Radio -->
+                <td>
+                    <table class="form onlyradio">
+                        <tr>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Investments__c,'No investment liquidation required'),'radiotrue.png' ,'radiofalse.png') )}" class="radio"/></td>
+                                        <td>No investment liquidation required.</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="center">
+                                <table> 
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Investments__c,'Immediately liquidate investments and send cash proceeds'),'radiotrue.png' ,'radiofalse.png') )}" class="radio"/></td>
+                                        <td>Immediately liquidate investments and send cash proceeds.</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="center">
+                                <table> 
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Investments__c,'Send all investments in-kind'),'radiotrue.png' ,'radiofalse.png') )}" class="radio"/></td>
+                                        <td>Send all investments in-kind.</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="center">
+                                <table> 
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Investments__c,'Send only the identified investments below in kind'),'radiotrue.png' ,'radiofalse.png') )}" class="radio"/></td>
+                                        <td>Send only the identified investment(s) below in-kind.</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table class="form">
+                                    <tr>
+                                        <td width="18%">Investment Name <b>1</b></td>
+                                        <td width="" class="input_change"><div>{!PrimaryObject.Investment_Name_1__c}</div></td>
+                                    </tr>
+                                </table>
+                            </td>  
+                        </tr>
+                        <tr>
+                            <td>
+                                <table class="form">
+                                    <tr>
+                                        <td width="18%">Investment Name <b>2</b></td>
+                                        <td class="input_change"><div>{!PrimaryObject.Investment_Name_2__c}</div></td>
+                                    </tr>
+                                </table>
+                            </td>  
+                        </tr>
+                        <tr>
+                            <td>
+                                <table class="form">
+                                    <tr>
+                                        <td width="18%">Investment Name <b>3</b></td>
+                                        <td class="input_change"><div>{!PrimaryObject.Investment_Name_3__c}</div></td>
+                                    </tr>
+                                </table>
+                            </td>  
+                        </tr>
+                        <tr>
+                            <td>
+                                <table class="form">
+                                    <tr>
+                                        <td width="18%">Investment Name <b>4</b></td>
+                                        <td class="input_change"><div>{!PrimaryObject.Investment_Name_4__c}</div></td>
+                                    </tr>
+                                </table>
+                            </td>  
+                        </tr>
+                        <tr>
+                            <td>
+                                <table class="form">
+                                    <tr>
+                                        <td width="18%">Investment Name <b>5</b></td>
+                                        <td class="input_change"><div>{!PrimaryObject.Investment_Name_5__c}</div></td>
+                                    </tr>
+                                </table>
+                            </td>  
+                        </tr>
+                        <tr>
+                            <td>
+                                <table class="form">
+                                    <tr>
+                                        <td width="18%">Investment Name <b>6</b></td>
+                                        <td class="input_change"><div>{!PrimaryObject.Investment_Name_6__c}</div></td>
+                                    </tr>
+                                </table>
+                            </td>  
+                        </tr>
+                    </table>
+                </td>                
+            </tr>
+            <tr><!-- Text -->
+                <td>
+                    <table width="45%">
+                        <tr style="height:25px;">
+                            <td valign="center" style="background-color:#C0C0C0;padding:5px;"><span style="color:#007491;font-size:9pt;font-family:sans-serif;">DELIVERY INSTRUCTIONS</span></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr><!-- Text -->
+                <td>
+                   <span style="color:#007491;font-size:8.5pt;font-family:sans-serif;">Select from the following options:</span>
+                </td>
+            </tr>
+            <tr><!-- fields --><!-- Radio -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td valign="center" width="50%">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Delivery_information__c,'Check'), 'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td><b>CHECK</b> (Fees may apply with <b><u>outgoing</u></b> custodian to complete the transfer or conversion.)</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td valign="center" width="50%">
+                                <table> 
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Delivery_information__c,'Wire'), 'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td><b>WIRE</b> (Fees may apply with <b><u>outgoing</u></b> custodian to complete the transfer or conversion. If the option of wire is selected, Preferred Trust Company will charge an incoming wire fee of $30.00 to your IRA account.)</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>                
+            </tr>
+            <tr>
+                <td width="100%">
+                    <table  width="100%" style="border-collapse: collapse;border-spacing: 0;">
+                        <tr>
+                            <td>
+                                <table width="100%" style="border-collapse: collapse;border-spacing: 0;">
+                                    <tr style="height:28px;">
+                                        <td width="45%" style="background-color:#C0C0C0;padding-left:5px;"><span style="color:#007491;font-size:8.5pt;font-family:sans-serif;">CHECK INSTRUCTIONS</span></td>
+                                        <td width="10%"></td>
+                                        <td width="45%"  style="padding-left:5px;background-color:#C0C0C0;"><span style="color:#007491;font-size:8.5pt;font-family:sans-serif;">WIRE INSTRUCTIONS</span></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table width="100%" style="border-collapse: collapse;border-spacing: 0;">
+                                    <tr>
+                                        <td width="50%" style="padding-right:10px;border-right: 1px solid #000" valign="top">
+                                            <table>
+                                                <tr>
+                                                    <td style="color:#007491;font-size:8.5pt;font-family:sans-serif;"><br/>Make checks or certificate registration payable to:<br/><br/>
+                                                        <b>Preferred Trust Company, LLC FBO</b> (Client Name), (IRA Type)<br/><br/>
+                                                        Checks and certificate registrations should be mailed to:<br/><br/>
+                                                       <b>Preferred Trust Company</b><br/>
+                                                        2140 E. Pebble Road, Suite 140<br/>
+                                                        Las Vegas, NV 89123</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td width="5%"></td>
+                                        <td width="45%" style="color:#007491;font-size:8.5pt;font-family:sans-serif;font-weight: 200" valign="top">
+                                            <table style="border-collapse: collapse;border-spacing: 0;">
+                                                <tr>
+                                                    <td style="padding: 10px 0;" width="38%"  valign="top"><b>ABA</b> (Routing) <b>Number</b>:</td>
+                                                    <td style="padding: 10px 0;"  valign="top">026009593</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 10px 0;"  width="38%"  valign="top"><b>Bank</b>:</td>
+                                                    <td style="padding: 10px 0;"  valign="top">Bank of America<br/>222 Broadway<br/>New York, NY 10038</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 10px 0;"  width="38%"  valign="top"><b>Account Number</b>:</td>
+                                                    <td style="padding: 10px 0;"  valign="top">501014778432</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 10px 0;"  width="38%"  valign="top"><b>Account Name</b>:</td>
+                                                    <td style="padding: 10px 0;"  valign="top">Preferred Trust Company, LLC <br/>2140 E. Pebble Road, Suite 140<br/>Las Vegas, NV 89123</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 10px 0;"  width="38%"  valign="top"><b>Message/Reference</b>:</td>
+                                                    <td style="padding: 10px 0;"  valign="top">FBO:(Client Name) and/or (Account Number)</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>                
+            </tr>
+        </table>
+    </div>
+    
+    <div class="page">
+        <table width="100%">
+            <tr class="section_header"><td><b>SECTION 6</b> | Withholding Election <span style="font-size: 8pt;">(For conversions only. See IRS Form W-8BEN if you are a foreign person.)</span></td></tr>
+            <tr class="line_blank"></tr>
+            <tr><td><span style="font-size: 8pt;">Instructions for Form W-4P (Withholding Certificate) are included in the Additional Information section of this form.</span></td></tr>
+            <tr><!-- fields --><!-- Radio -->
+                <td>
+                    <table class="form" style="border-collapse: collapse;border-spacing: 0;">
+                        <tr>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Withholding__c,'I elect not to have federal income tax withheld from my IRA distribution'), 'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td>I elect <b>not</b> to have Federal income tax withheld from my IRA distribution.</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Withholding__c,'I elect to have 10% federal income tax withheld from my IRA distribution'), 'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td>I elect to have 10% Federal income tax withheld from my IRA distribution.</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="center">
+                                <table class="form">
+                                    <tr>
+                                        <td>I want the following <b>additional</b> dollar amount &nbsp;&nbsp;<b>$</b></td>
+                                        <td  class="input_change" width="8%"><div>{!PrimaryObject.I_want_the_following_additional_amount__c}</div></td>
+                                        <td> or additional percentage</td>
+                                        <td  class="input_change" width="4%"><div>{!PrimaryObject.Or_additional_withheld_from_each_IRA_d__c}</div></td>
+                                        <td> % withheld from each IRA distribution.</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="center">
+                                <table>
+                                    <tr valign="center">
+                                        <td><img src="{!URLFOR($Resource.helper_images, if(contains(PrimaryObject.Withholding__c,'state income tax withheld from my IRA distribution'), 'radiotrue.png','radiofalse.png') )}" class="radio"/></td>
+                                        <td>I elect to have <b>$</b></td>
+                                        <td  class="input_change" width="8%"><div>{!if(contains(PrimaryObject.Withholding__c,'state income tax withheld from my IRA distribution') , PrimaryObject.I_elect_to_have__c, '')}</div></td>
+                                        <td> or</td>
+                                        <td  class="input_change" width="6%"><div>{!if(contains(PrimaryObject.Withholding__c,'state income tax withheld from my IRA distribution') , PrimaryObject.Or_state_income_tax_withheld_from_my_I__c, '')}</div></td>
+                                        <td> % state income tax withheld from my IRA distribution (if applicable)</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>                
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr class="section_header"><td><b>SECTION 7</b> | Acknowledgement Signatures</td></tr>
+            <tr>
+                <td align="justify" style="font-size: 8pt;line-height: 12px;font-weight: lighter">
+                    I certify that the information contained on this form is true and correct. I direct the transferor Preferred Trust Company as Custodian to transfer or convert my IRA assets as set forth in this form. I understand I should seek the guidance of a tax or legal professional with regard to this decision. I understand that if I establish a separate conduit account, it is my responsibility to keep my conduit account separate from my other accounts. I understand that Preferred Trust Company as Custodian cannot provide legal advice. I indemnify and agree to hold Preferred Trust Company as Custodian harmless against any liabilities. I assume full responsibility for the consequences of this transfer or conversion decision. Preferred Trust Company agrees to accept these funds as a transfer or  conversion.
+                </td>
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr>
+                <td>
+                    <table class="form" style="width:90%!important">
+                        <tr>
+                            <td width="30%">Signature of IRA Account Owner</td>
+                            <td width="" class="input_change"></td>
+                            <td width="5%">&nbsp;&nbsp;&nbsp;&nbsp;Date</td>
+                            <td width="15%" class="input_change"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr>
+                <td>
+                    <table style="width:90%!important">
+                        <tr valign="top">
+                            <td width="60%"  style="font-size: 7pt;line-height: 12px;font-weight: lighter">BROKERAGE: In the case of a transfer from a brokerage account, the transferring firm may require signature authorization including but not limited to, signature guarantee, medallion guarantee or some other form of necessary stamp. These guarantees help protect against fraud. Most banks and brokerage firms can provide one. Please contact the transferring firm for clarification.</td>
+                            <td  style="font-size: 7pt;line-height: 12px;font-weight: lighter">For Bank Use: Medallion Signature Guarantee Stamp (For Securities or Non-FDIC Instructions Only</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr class="line_blank"></tr>
+            <tr class="line_blank"></tr>
+            <tr class="line_blank"></tr>
+            <tr class="line_blank"></tr>
+            <tr>
+                <td>
+                    <table class="form" style="width:90%!important">
+                        <tr>
+                            <td width="18%">Signature of Custodian</td>
+                            <td width="" class="input_change"></td>
+                            <td width="5%">&nbsp;&nbsp;&nbsp;&nbsp;Date</td>
+                            <td width="15%" class="input_change"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr class="line_blank"></tr>
+            <tr>
+                <td>
+                    <table style="width:90%!important">
+                        <tr valign="top">
+                            <td width="60%"  style="font-size: 7pt;line-height: 12px;font-weight: lighter"></td>
+                            <td  style="font-size: 7pt;line-height: 12px;font-weight: lighter">For Bank Use: Medallion Signature Guarantee Stamp (For Securities or
+                                Non-FDIC Instructions Only)</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="page">
+        <table width="100%">
+            <tr class="section_header"><td>ADDITIONAL INFORMATION</td></tr>
+            <tr class="line_blank"></tr>
+            <tr>
+                <td>
+                    <table style="border-collapse: collapse;border-spacing: 0;font-size: 7pt;line-height: 12px;font-weight: 100!important;" class="mini">
+                        <tr valign="top">
+                            <td width="48%">
+                               <p><b>Purpose.</b> The Request for Transfer or Conversion to an IRA for Traditional, Roth, SEP or SIMPLE IRAs form is designed to assist you in transferring or converting assets from one individual retirement arrangement (IRA) to another IRA. This form does not allow for cost and penalty-free SIMPLE IRA transfers from a designated financial institution (DFI). Your DFI will require additional documentation, such as an election form. </p>
+                               <p><b>Additional Documents.</b> A transfer can avoid income and penalty taxes. A conversion by transfer is a taxable event that avoids penalty taxes. For your transfer or conversion to be successful, additional contribution and distribution documentation may be required by your
+                                IRA's custodian. </p>
+                               <p><b>Purpose.</b> The Request for Transfer or Conversion to an IRA for Traditional, Roth, SEP or SIMPLE IRAs form is designed to assist you in transferring or converting assets from one individual retirement arrangement (IRA) to another IRA. This form does not allow for cost and penalty-free SIMPLE IRA transfers from a designated financial institution (DFI). Your DFI will require additional documentation, such as an election form. </p>
+                               <p><b>For Additional Guidance.</b> It is in your best interest to seek the guidance of your tax or legal professional before completing this document. For more information refer to Internal Revenue Service (IRS) Publication 590-Individual Retirement Arrangements, IRS Publication 505-Tax Withholding and Estimated Tax, instructions to your federal income tax return, your local IRS office, or the IRS's website at <a href="http://www.irs.gov/">www.irs.gov</a>. </p>
+                               <p><b>Terms.</b> A general understanding of the following terms may be helpful in completing your transactions </p>
+                               <p><b>Conversion.</b> A conversion is a reportable movement of assets from a traditional IRA or SIMPLE IRA to a Roth IRA. </p>
+                               <p><b>In Kind.</b> If an IRA contains stocks, bonds, mutual fund shares, or other types of property, it may be possible to move such property to an IRA without liquidation. This type of "in-kind" transfer or conversion would require that the property be re-registered in the name of the transferee custodian for the benefit of your IRA. The transferee's policies, charters, or applicable law may prevent the transfer of property. Time deposits and savings accounts are not transferable. </p>
+                               <p><b>Required Minimum Distribution (RMD).</b> IRA owners who are age 70½ or older must satisfy an annual RMD. The penalty for failing to take the annual RMD for any distribution year is a 50% excise tax on the amount not distributed. RMDs cannot be converted to a Roth IRA. Although the rules permit you to transfer your RMD, it must still be satisfied by the required distribution date. </p>
+                               <p><b>Two-Year Rule.</b> SIMPLE IRA funds cannot be transferred to a traditional IRA or converted to a Roth IRA within a two-year period that begins on the date of the initial contribution to your SIMPLE IRA. SIMPLE IRA funds transferred or converted during the two-year period are subject to an additional 25% excise tax. You may, however, roll over to transfer a SIMPLE IRA to a SIMPLE IRA within the two-year period. </p>
+                               <p><b>Conduit IRA.</b> Retirement funds originally rolled over from certain employer-sponsored eligible retirement plans may have been maintained in a separate “conduit IRA” not commingled with any other types of IRA contributions. Check with your tax or legal professional to determine if you need to continue to maintain these funds in a separate conduit IRA when they are transferred to a different custodian. </p>
+                               <p><b>Withholding of Federal Income Tax.</b> Generally, federal income tax withholding applies to your IRA distributions. The methods and rate on withholding depends on (a) the type of distribution you receive, (b) whether the distribution is delivered outside the United States to its possessions, and (c) whether you (or your beneficiary after your death) are a nonresident alien individual, a nonresident alien beneficiary, or a foreign estate. Qualified distributions from a Roth IRA are nontaxable and, therefore, not subject to withholding. Because your tax situation may change from year to year, you may want to change your withholding election each year. You can change the amount to be withheld by using IRS Form W-4P or an appropriate substitute form. </p>
+                            </td>
+                            <td width="4%"></td>
+                            <td width="48%">
+                                <p><b>Nonperiodic Payments</b>- 10% Withholding. Distributions from an IRA that are payable on demand are treated as nonperiodic payments. Your IRA custodian must withhold at a flat 10% rate from your IRA distributions unless you choose not to have federal income tax withheld. You can choose not to have income tax withheld from a nonperiodic payment by using IRS Form W-4P or an appropriate substitute form and providing your correct tax identification number (TIN). Generally, your choice to have income tax withheld or not will apply to any later distribution from your IRA. You may also specify an additional amount that you want withheld.</p>
+                                <p><em>Caution. If you do provide your correct TIN, your IRA custodian cannot honor your request not to have income tax withheld and must withhold 10% of the payment for federal income tax.</em></p>
+                                <p><b>Choosing Not to Have Income Tax Withheld.</b>You (or in the event of death, your beneficiary or estate) can choose not to have income tax withheld from your payments by using Form W-4P or an appropriate substitute form. For an estate, the election to have no income tax withheld may be made by the executor or personal representative of the decedent. The executor/representative must provide the estate's TIN/employer identification number (EIN).</p>
+                                <p><em>Caution. There are penalties for not paying enough federal income tax during the year, either through withholding or estimated tax payments. New retirees, especially, should see IRS Publication 505, Tax Withholding and Estimated Tax. It explains the estimated tax requirements and describes penalties in detail. You may be able to avoid quarterly estimated tax payments by having enough tax withheld from your IRA using Form W-4P or an appropriate substitute form.</em></p>
+                                <p><b>Changing Your "No Withholding" Choice.</b>If you previously chose not to have income tax withheld and you now want 10% withholding, write "Revoked" next to the check box on line 1 of IRS Form W-4P and provide a copy to your IRA custodian. To the extent you want a greater amount withheld, complete a new Form W-4P or an appropriate substitute form for your IRA custodian.</p>
+                                <p><b>Payments to Foreign Persons and Payments Outside the United States.</b>Unless you are a nonresident alien, withholding (in the manner described above) is required on non periodic payments that are delivered to you outside the United States or its possessions. You cannot choose not to have income tax withheld Form W-4P. See IRS Publication 505, Tax Withholding and Estimated Tax for additional details.</p>
+                                <p>In the absence of a tax treaty exemption, nonresident aliens, nonresident alien beneficiaries, and foreign estates generally are subject to a 30% withholding tax under IRC Section 1441 on the taxable portion of a non-periodic pension or annuity payment that is from U.S. sources. However, most tax treaties provide that private pensions and annuities are exempt from withholding and tax. Also, payments from certain pension plans are exempt from withholding even if no tax treaty applies. See IRS Publication 515 Withholding of Tax of Nonresident Aliens and Foreign Entities, and IRS Publication 519, U.S. Tax Guide for Aliens, for details. A foreign person should submit IRS Form W-8BEN, Certificate of Foreign Status of Beneficial Owner for United States Tax Withholding, to the IRA custodian before receiving any payments. The Form W-8BEN must contain the foreign person's TIN.</p>
+                                <p>If you are a foreign person who has provided an IRA custodian with IRS W-8BEN, the IRA custodian will furnish a statement to you on IRS Form 1042-S, Foreign Person's U.S. Source Income Subject to Withholding, by March 15 of the next year.</p>
+                                <p><b>State Withholding.</b>Your state may allow or require state income tax withholding on any taxable distribution.</p>
+                                <p><b>Local Withholding.</b>Your local governing authority may allow or require local income tax withholding on any taxable distribution.</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+    <div class="page">
+        <table width="98%" style="margin-left: 5px;">   
+            <tr>
+                <td width="9%"><img src="{!URLFOR($Resource.Logo_pdf)+'?left'}" style="width: 100%;"/></td>
+                <td width="51%" style="padding-left: 5px; font-size: 11pt;">
+                    <br/><b>Client Services</b><span class="gray"> | 888.990.7892</span><br/>
+                    <small class="gray"><b style="color: #000">E.</b> info@ptcemail.com<br/>
+                    <b style="color: #000">F</b>. 702.946.0136<br/>
+                    <b style="color: #000">W</b>. www.preferredtrustcompany.com<br/>
+                    2140 E. Pebble Road, Suite 140<br/>
+                    Las Vegas, NV 89123<br/></small>
+                </td>
+                <td valign="top" align="right" class="gray">
+                    <span class="title_header">Pre-Consent E-Sign</span><br/>
+                    <span class="title_header">Authorization Disclosure Form</span><br/>
+                    <span>Traditional | Roth | SEP | SIMPLE</span><br/>
+                    <table class="form" width="100%" style="margin-top: 8px;">
+                        <tr>
+                            <td width="60%">PTC IRA Account Number</td>
+                            <td width="40%" class="input_change"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <br/>
+        <br/>
+        <table width="100%">
+            <tr class="section_header"><td><b>SECTION 1</b> | IRA Account Owner Information</td></tr>
+            <tr class="line_blank"></tr>
+            <tr><!-- Text -->
+                <td>
+                   <span style="color:#007491;font-size:9pt;font-family:sans-serif;">The <b>original</b> Pre-Consent Authorization Disclosure Form must be received by Preferred Trust Company before E-Sign communication can be
+                    sent and received.</span>
+                </td>
+            </tr>            
+            <tr class="line_blank"></tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td width="10%">First Name</td>
+                            <td width="36%" class="input_change"><div>{!PrimaryObject.Contact__r.FirstName}</div></td>
+                            <td width="4%">Initial</td>
+                            <td width="5%" class="input_change"><div>{!PrimaryObject.Contact__r.MiddleName}</div></td>
+                            <td width="10%">Last Name</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Contact__r.LastName}</div></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr><!-- fields -->
+                <td>
+                    <table class="form">
+                        <tr>
+                            <td width="5%">Email</td>
+                            <td width="" class="input_change"><div>{!PrimaryObject.Contact__r.Email}</div></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr>
+                <td style="font-size: 8pt;line-height: 15px;font-weight: 100!important; padding-left: 15px;" class="extend">
+                    <p>The Pre-Consent E-Sign Authorization Disclosure (“Disclosure”), applies to all Communications for those products and services offered through Preferred Trust Company, LLC (Preferred Trust) that are not otherwise governed by the terms and conditions of an electronic disclosure and consent.</p>
+                    <p>The words <b>" we," "us,"</b> and <b>"our"</b> refer to the Preferred Trust entity with whom you have your Account, and the words <b>"you"</b> and <b>"your"</b> mean you, the individual(s) or entity identified on the Account(s). As used in this Disclosure, <b>"Account"</b> means the account you have with us. <b>"Communication"</b> means any customer agreements or amendments thereto, disclosures, notices, transaction history, privacy policies and all other information related to the product or service, including but not limited to information that we are required by law to provide to you in writing.</p>
+                    <p>1.. <b>Scope of Communications to Be Provided in Electronic Form.</b> When you use a product or service to which this Disclosure applies, you agree that we may provide you with any Communications in electronic format, and that we may discontinue sending paper Communications to you, unless and until you withdraw your consent as described below. Your consent to receive electronic Communications and transactions includes, but is not limited to:</p>
+                    <p>
+                        <div style="padding-left:20px;">· account setup paperwork and subsequent materials associated with the product or service available through Preferred Trust for your Account;</div>
+                        <div style="padding-left:20px;margin-top:10px;">· all legal and regulatory disclosures and communications associated with the product or service available through Preferred Trust for your Account;</div>
+                        <div style="padding-left:20px;margin-top:10px;">· notices or disclosures about a change in the terms with the product or service available through Preferred Trust for your Account; and</div>
+                        <div style="padding-left:20px;margin-top:10px;">· privacy policies and notices. </div>
+                    </p>
+                    <p>2. <b>Method of Providing Communications to You in Electronic Form.</b> . All Communications that we provide to you in electronic form will be provided either (1) via e-mail, (2) by access to a web site that we will designate in an e-mail notice we send to you at the time the information is available, or (3) to the extent permissible by law, by access to a web site that we will generally designate in advance for such purpose.</p>
+                    <p>3. <b>How to Withdraw Consent.</b> You may withdraw your consent to receive Communications in electronic form by contacting us at (888) 990.7892 or send an e-mail to info@ptcemail.com. At our option, we may treat your provision of an invalid e-mail address, or the subsequent malfunction of a previously valid e-mail address, as a withdrawal of your consent to receive electronic Communications. Any withdrawal of your consent to receive electronic Communications will be effective only after we have a reasonable period of time to process your withdrawal.</p>
+                    <p>4. <b>How to Update Your Records.</b> It is your responsibility to provide us with true, accurate and complete e-mail address, contact, and other information related to this Disclosure and your Account(s), and to maintain and promptly update any changes in this information. You can update information (such as your e-mail address) by contacting us at (888) 990.7892 or send an e-mail to info@ptcemail.com.</p>
+                    <p>
+                        <div style="padding-left:20px;">· an Internet browser that supports 128 bit encryption;</div>
+                        <div style="padding-left:20px;margin-top:10px;">· sufficient electronic storage capacity on your computer's hard drive or other data storage unit; </div>
+                        <div style="padding-left:20px;margin-top:10px;">·  an e-mail account with an Internet service provider and e-mail software in order to participate in our electronic Communications programs; and</div>
+                        <div style="padding-left:20px;margin-top:10px;text-align: justify;text-align-last: left;">· a personal computer (for PC's: Pentium 120 Hhz or higher; for Macintosh, Power Mac 9500, Power PC 604 processor 120-MHz Base or higher), operating system and telecommunications connections to the Internet capable of receiving, accessing, displaying, and either printing or storing Communications received from us in electronic form via a plain text-formatted e-mail or by access to our web site using one of the browsers specified above </div>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <table width="100%">
+            <tr>
+                <td style="font-size: 8pt;line-height: 15px;font-weight: 100!important; padding-left: 15px;" class="extend">
+                    <p>6. <b>Requesting Paper Copies.</b>We will not send you a paper copy of any Communication, unless you request it in writing or we otherwise deem it appropriate to do so. You can obtain a paper copy of an electronic Communication by printing it yourself or by requesting that we mail you a paper copy, provided that such request is made within a reasonable time after we first provided the electronic Communication to you. We reserve the right, but assume no obligation, to provide a paper (instead of electronic) copy of any Communication that you have authorized us to provide electronically.</p>
+                    <p>7. <b>Communications in Writing.</b> All Communications in either electronic or paper format from us to you will be considered "in writing." You should print or download for your records a copy of this Disclosure and any other Communication that is important to you.</p>
+                    <p>8. <b>Federal Law.</b> You acknowledge and agree that your consent to electronic Communications is being provided in connection with a transaction affecting interstate commerce that is subject to the federal Electronic Signatures in Global and National Commerce Act, and that you and we both intend that the Act apply to the fullest extent possible to validate our ability to conduct business with you by electronic means.</p>
+                    <p>9. <b>Termination/Changes.</b> We reserve the right, in our sole discretion, to discontinue the provision of your electronic Communications, or to terminate or change the terms and conditions on which we provide electronic Communications. We will provide you with notice of any such termination or change as required by law.</p>
+                    <p>10. <b>Consent.</b> By signing the Pre-Consent E-Sign Authorization Disclosure Form, I have read and accept the above agreement, you hereby give your affirmative consent to provide electronic Communications to you as described herein. You further agree that your computer satisfies the hardware and software requirements specified above and that you have provided us with a current e-mail address at which we may send electronic Communications to you.</p>
+                </td>
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr class="line_blank"></tr>
+            <tr class="line_blank"></tr>
+            <tr class="section_header"><td><b>SECTION 2</b> | Acknowledgement Signatures</td></tr>
+            <tr class="line_blank"></tr>
+            <tr>
+                <td align="justify" style="font-size: 8pt;line-height: 12px;font-weight: lighter">
+                    I have read and accept the above agreement, and hereby give Preferred Trust Company affirmative consent to provide electronic Communications as described herein. I further agree that my computer satisfies the hardware and software requirements specified above and that I have provided Preferred Trust with a current e-mail address at which Preferred Trust may send electronic Communications
+                </td>
+            </tr>
+            <tr class="line_blank"></tr>
+            <tr>
+                <td>
+                    <table class="form" style="width:90%!important">
+                        <tr>
+                            <td width="30%">Signature of IRA Account Owner</td>
+                            <td width="50" class="input_change"></td>
+                            <td width="5%">&nbsp;&nbsp;&nbsp;&nbsp;Date</td>
+                            <td width="15%" class="input_change"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table class="form" style="width:90%!important">                       
+                        <tr>
+                            <td width="15%">Print Name</td>
+                            <td width="65%" class="input_change"></td>
+                            <td width="5%"></td>
+                            <td width="15%"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    </apex:outputText>
+</body>
+
+
+</apex:page>

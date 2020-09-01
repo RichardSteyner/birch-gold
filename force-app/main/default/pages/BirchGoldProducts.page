@@ -1,0 +1,72 @@
+<!--
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+* Visualforce page for displaying the data of products retrieved from Bayside Gold API.
+* ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Alsinan Nazim   	<alsinan.naz@gmail.com>
+* @modifiedBy     Alsinan Nazim   	<alsinan.naz@gmail.com>
+* @maintainedBy   Alsinan Nazim   	<alsinan.naz@gmail.com>
+* @version        1.0
+* @created        2020-03-20
+* @modified       YYYY-MM-DD
+* @systemLayer    Entrypoint
+* @controller     None | Standard | MyCustomController.cls
+* @controllerex   None | MyControllerExtension.cls
+* @see            DailyPricingSheetController.apxc
+* ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @changes
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┘
+-->
+<apex:page standardStylesheets="false" controller="DailyPricingSheetController" showHeader="false" sidebar="false">
+    <!-- Apex Page for Listing Products and related Information -->
+    <head>
+        <style>
+            #customers {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px;
+            }
+            
+            #customers td, #customers th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            }
+            
+            #customers tr:nth-child(even){background-color: #f2f2f2;}
+            
+            #customers tr:hover {background-color: #ddd;}
+            
+            #customers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #54698d;
+            color: white;
+            }
+        </style>
+    </head>
+    
+    <apex:repeat value="{!priceWrapper}" var="products">
+        <table id="customers">
+            <tr>
+                <th>Description</th>
+                <th>Metal</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>SKU</th>
+                <th>Availability</th>
+            </tr>
+            <apex:repeat value="{!products.RetailPrices}" var="inner">
+                <tr>
+                    <td>{!inner.description}</td>
+                    <td>{!inner.metal}</td>
+                    <td>{!inner.category}</td>
+                    <td>{!inner.price}</td>
+                    <td>{!inner.sku}</td>
+                    <td>{!inner.availability}</td>
+                </tr>
+            </apex:repeat>
+        </table>
+    </apex:repeat>
+    
+</apex:page>

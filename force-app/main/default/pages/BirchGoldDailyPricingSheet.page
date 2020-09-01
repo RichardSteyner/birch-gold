@@ -1,0 +1,412 @@
+<!--
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+* Visualforce page for displaying pricing sheet info from Bayside Gold API.
+* ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Alsinan Nazim   	<alsinan.naz@gmail.com>
+* @modifiedBy     Alsinan Nazim   	<alsinan.naz@gmail.com>
+* @maintainedBy   Alsinan Nazim   	<alsinan.naz@gmail.com>
+* @version        1.0
+* @created        2020-03-20
+* @modified       YYYY-MM-DD
+* @systemLayer    Entrypoint
+* @controller     None | Standard | MyCustomController.cls
+* @controllerex   None | MyControllerExtension.cls
+* @see            DailyPricingSheetController.apxc
+* ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @changes
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┘
+-->
+<apex:page controller="DailyPricingSheetController" standardStylesheets="false" sidebar="false" showHeader="false" docType="html-5.0" >
+    
+    <head>
+        <title>Birch Gold Group | Daily Pricing Sheet</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="https://bootsnipp.com/snippets/css/font-awesome.css"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    </head>
+    <apex:slds />
+    <style type="text/css">
+        body {
+        background: white !important;
+        }
+        .pricing-container table tbody {
+        text-align: left;
+        }
+        .pricing-container .card .header, .sub-head {
+        text-align: left;
+        }
+        .navbar-brand { 
+        color: #fff;
+        padding-left: 20px;
+        }
+        .table-striped input {
+        padding: 3px;
+        width: 100%;
+        font-size: 13px;
+        border-radius: 3px;
+        border: 1px solid #ccc8c8;
+        outline: none;
+        }
+        .navbar-right .pricing-button {
+        color: #061c3f;
+        border: 1px solid white;
+        outline: none;
+        height: 25px;
+        font-size: 12px;
+        background: white;
+        border-radius: 2px;
+        }
+        
+        .navbar-default {
+        background-color: #061c3f;
+        border-color: #061c3f;
+        border-radius: 0px;
+        }
+        .navbar-default .navbar-brand {
+        color: #ffffff;
+        }
+        .navbar {
+        margin-bottom: 0px;
+        }
+        .pricing-container-top {
+        background: whitesmoke;
+        border-bottom: 1px solid #f1e9e9;
+        border-radius: 0px;
+        text-align: left;
+        height: 55px;
+        }
+        .disabled-input {
+        background: white;
+        padding: 2px;
+        border: 1px solid grey;
+        border-radius: 2px;
+        margin-left: 15px;
+        }
+        .mini-stat h5 {
+        float: left;
+        margin: 0;
+        text-align: left;
+        font-size: 10px;
+        color: #888888;
+        }
+        .mini-stat li {
+        border-left: 1px solid #ddd;   
+        padding-left: 10px;
+        padding-right: 10px;
+        } 
+        .mini-stat>li:first-child {
+        border-left: none;
+        }
+        .mini-stat h5 .stat-value {
+        display:block;
+        font-size:18px;
+        margin-top:4px;
+        }
+        .global-prices {
+        padding-top: 10px;
+        }
+        .pricing-container {
+        margin-top: 20px;
+        }
+        .table-striped th {
+        background-color: #fafaf9;
+        color: #514f4d;
+        padding: .25rem .5rem;
+        font-weight: 700;
+        border: 1px solid #e0e0e0;
+        line-height: normal;
+        font-family: monospace;
+        text-transform: uppercase;
+        font-size: 12px;
+        }
+        .table-striped td {
+        border: 1px solid #e0e0e0;
+        font-size: 13px;
+        }
+        .product-name {
+        line-height: 2;
+        }
+        .product-td {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        }
+        @media only screen and (max-width: 768px) {
+        .rowhead th {
+        min-width: 120px;
+        }
+        .col-md-8 .list-inline {
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+        }
+        .pricing-button {
+        border-color: #061c3f !important;
+        color: white !important;
+        background: #061c3f !important;
+        outline: none !important;
+        }
+        }
+        
+        .loader {
+        position: relative;
+        text-align: center;
+        margin: 15px auto 35px auto;
+        z-index: 9999;
+        display: block;
+        width: 80px;
+        height: 80px;
+        border: 5px solid rgba(208, 208, 208, 0.25);
+        border-radius: 50%;
+        border-top-color: #03A9F4;
+        animation: spin 1s ease-in-out infinite;
+        -webkit-animation: spin 1s ease-in-out infinite;
+        }
+        .modal {
+        top: 30%;
+        }
+        @keyframes spin {
+        to {
+        -webkit-transform: rotate(360deg);
+        }
+        }
+        @-webkit-keyframes spin {
+        to {
+        -webkit-transform: rotate(360deg);
+        }
+        }
+        .modal-content {
+        border-radius: 0px;
+        box-shadow: 0 0 20px 8px rgba(0, 0, 0, 0.7);
+        }
+        .modal-backdrop.show {
+        opacity: 0.75;
+        }     
+        .modal-content {
+        background: white;
+        border: none;
+        border-radius: 4px;
+        box-shadow: none;
+        }
+    </style>
+    <script>
+
+    function downloadStatus() {
+        $("#download_stat").modal({
+            backdrop: true,
+            keyboard: false, 
+            show: true 
+        });
+        setTimeout(function() {
+            $("#download_stat").modal("hide");
+        }, 4000);
+    }
+    
+    function calculateThis(thisValue, thisIndex) {
+        var providedMarkup = thisValue;
+        var regexp = /^[0-9]+([,.][0-9]+)?$/g;
+        var result = regexp.test(providedMarkup);
+        if(!result) {
+            alert('Please enter a valid number');
+        }
+        else {
+			$('.valueprovider').find('input').attr("disabled","true");
+            callcontroller(thisValue, thisIndex);
+        }
+    }
+    
+    function calculateBuyBack(thisValue, thisIndex) {
+        var providedMarkup = thisValue;
+        var regexp = /^[0-9]+([,.][0-9]+)?$/g;
+        var result = regexp.test(providedMarkup);
+        if(!result) {
+            alert('Please enter a valid number');
+        }
+        else {
+			$('.valueprovider').find('input').attr("disabled","true");
+            callcontrollerForBuyBack(thisValue, thisIndex);
+        }
+    }
+    </script>
+    <body>
+
+       
+        
+        <!-- Navbar -->
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>                        
+                    </button>
+                    <a class="navbar-brand" href="">Pricing Sheet</a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <apex:form id="downloader">
+                        
+                        <apex:outputPanel >
+                            <!-- Modal -->
+                            <div class="modal fade" id="download_stat" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
+                                <div class="modal-dialog modal-sm" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body text-center">
+                                            <div class="loader"></div>
+                                            <div clas="loader-txt">
+                                                <p style="font-size:13px;color:grey;"> Generating Excel File... <br/>Please wait... </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                        
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a><apex:commandButton style="margin-right: -28px;" styleClass="pricing-button slds-button slds-button_neutral" action="{!RetrievePricingData}" value="Refresh Pricing Data"/></a></li>
+                            <li><a><apex:commandButton onclick="downloadStatus(); return true;"  styleClass="pricing-button slds-button slds-button_neutral" action="{!exportToExcel}" value="Export to Excel"/></a></li>
+                        </ul>
+                    </apex:form>
+                </div>
+            </div>
+        </nav>
+        
+    </body>
+    <apex:outputPanel rendered="{!NOT(loadedData)}">
+        <div class="container-fluid">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!loadedData}">
+        <div class="container-fluid pricing-container-top text-center">
+            
+            <div class="row global-prices">
+                <div class="col-md-4">
+                    <ul class="list-inline pull-left mini-stat">
+                        <li>
+                            <h5>
+                                LAST UPDATED 
+                                <span class="stat-value color-blue">
+                                    <i class="fa fa-plus-circle"></i>{!lastUpdated}
+                                </span>
+                            </h5>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-8">
+                    <ul class="list-inline pull-right mini-stat">
+                        <li>
+                            <h5>
+                                PLATINUM 
+                                <span class="stat-value color-blue">
+                                    <i class="fa fa-plus-circle"></i>$ {!priceWrapper.spotPrices.platinumAsk}</span>
+                            </h5>
+                        </li>
+                        <li>
+                            <h5>
+                                SILVER 
+                                <span class="stat-value color-blue">
+                                    <i class="fa fa-plus-circle"></i>$ {!priceWrapper.spotPrices.silverAsk}
+                                </span>
+                            </h5>
+                        </li>
+                        <li>
+                            <h5>
+                                PALLADIUM 
+                                <span class="stat-value color-blue">
+                                    <i class="fa fa-plus-circle"></i>$ {!priceWrapper.spotPrices.palladiumAsk}
+                                </span>
+                            </h5>
+                        </li>
+                        <li>
+                            <h5>
+                                GOLD 
+                                <span class="stat-value color-blue">
+                                    <i class="fa fa-plus-circle"></i>$ {!priceWrapper.spotPrices.goldAsk}
+                                </span>
+                            </h5>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pricing Data Container -->
+        <div class="container-fluid pricing-container text-center">
+            <div class="col-md-12">
+                <div class="card"> 
+                    <div class="content table-responsive table-full-width">
+                        <apex:form id="showstate">
+                            
+                            <apex:actionFunction name="callcontroller" action="{!calculateCost}" reRender="ithis">
+                                <apex:param value="" name="markup" />
+                                <apex:param value="" name="index" />
+                            </apex:actionFunction>
+                            
+                            <apex:actionFunction name="callcontrollerForBuyBack" action="{!calculateBuyBackCost}" reRender="ithis">
+                                <apex:param value="" name="markup" />
+                                <apex:param value="" name="index" />
+                            </apex:actionFunction>
+                            
+                            <apex:outputPanel id="ithis">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr class="rowhead">
+                                            <th style="width: 265px;">Product Name</th>
+                                            <th>SKU</th>
+                                            <th>Price</th>
+                                            <th>Admin Fee</th>
+                                            <th>Cost</th>
+                                            <th>Buy Back Admin Fee</th>
+                                            <th>Buy Back Cost</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <apex:variable var="index" value="{!0}" />
+                                        <apex:repeat value="{!productWrapperList}" var="item">
+                                            <tr>
+                                                <td class="product-td">
+                                                    <div class="product-name slds-truncate" title="{!item.productName}">
+                                                        <a href="#">{!item.productName}</a>
+                                                    </div>
+                                                </td>
+                                                <td> 
+                                                    <apex:inputText value="{!item.sku}" disabled="true"/>
+                                                </td>
+                                                <td>
+                                                    <apex:input value="{!item.unitPrice}" disabled="false"/>
+                                                </td>
+                                                <td class="valueprovider">
+                                                    <apex:input value="{!item.adminFee}" onchange="calculateThis(this.value, {!item.index});" />
+                                                </td>
+                                                <td>
+                                                    <apex:input value="{!item.totalCost}" disabled="true"/>
+                                                </td>
+                                                <td class="valueprovider">
+                                                    <apex:input value="{!item.buyBackAdminFee}" onchange="calculateBuyBack(this.value, {!item.index});"/>
+                                                </td>
+                                                <td >
+                                                    <apex:input value="{!item.buyBackAdminCost}" disabled="true"/>
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </tbody>
+                                </table>
+                            </apex:outputPanel>
+                        </apex:form>
+                    </div>
+                </div>
+            </div>
+        </div>    
+    </apex:outputPanel>
+</apex:page>

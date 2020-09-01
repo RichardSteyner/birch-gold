@@ -1,0 +1,503 @@
+<!--
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┐
+* Visualforce page for generating MS Excel file for daily pricing calculations.
+* ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @author         Alsinan Nazim   	<alsinan.naz@gmail.com>
+* @modifiedBy     Alsinan Nazim   	<alsinan.naz@gmail.com>
+* @maintainedBy   Alsinan Nazim   	<alsinan.naz@gmail.com>
+* @version        1.0
+* @created        2020-03-20
+* @modified       YYYY-MM-DD
+* @systemLayer    Entrypoint
+* @controller     None | Standard | MyCustomController.cls
+* @controllerex   None | MyControllerExtension.cls
+* @see            DailyPricingSheetController.apxc
+* ──────────────────────────────────────────────────────────────────────────────────────────────────
+* @changes
+* ─────────────────────────────────────────────────────────────────────────────────────────────────┘
+-->
+<apex:page standardStylesheets="false" controller="DailyPricingSheetController" 
+           contenttype="application/vnd.ms-excel#DailyPricingSheet {!TODAY()}.xls">
+    
+    {!xmlheader}
+    
+    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+              xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+              xmlns:html="http://www.w3.org/TR/REC-html40">
+        
+        <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+            <Author>Birch Gold Group</Author>
+            <LastAuthor></LastAuthor>
+            <Company>>Birch Gold Group</Company>
+            <Version>1</Version>
+        </DocumentProperties> 
+        
+        <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+            <WindowHeight>16000</WindowHeight>
+            <WindowWidth>20480</WindowWidth>
+            <WindowTopX>400</WindowTopX>
+            <WindowTopY>400</WindowTopY>
+            <ProtectStructure>False</ProtectStructure>
+            <ProtectWindows>False</ProtectWindows>
+        </ExcelWorkbook>
+        
+        <Styles>
+            <Style ss:ID="Default" ss:Name="Normal">
+                <Alignment ss:Vertical="Bottom"/>
+                <Borders/>
+                <Font/>
+                <Interior/>
+                <NumberFormat/>
+                <Protection/>
+            </Style>
+            <Style ss:ID="s98">
+                <NumberFormat ss:Format="0.0%"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFF00"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFF00"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFF00"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFF00"/>
+                </Borders>
+                <Alignment ss:Vertical="Center" ss:Horizontal="Center"/>
+                <Font ss:Size="12" ss:Bold="1" ss:Color="#FFFF00" ss:FontName="Calibri" x:Family="Swiss"/>
+                <Interior ss:Color="#000000" ss:Pattern="Solid"/>
+            </Style>
+            <Style ss:ID="s68">
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFF00"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFF00"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFF00"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FFFF00"/>
+                </Borders>
+                <Alignment ss:Vertical="Center" ss:Horizontal="Center"/>
+                <Font ss:Size="12" ss:Bold="1" ss:Color="#FFFF00" ss:FontName="Calibri" x:Family="Swiss"/>
+                <Interior ss:Color="#000000" ss:Pattern="Solid"/>
+            </Style>
+            <Style ss:ID="s34">
+                <Font ss:FontName="Calibri" x:CharSet="1" x:Family="Swiss" ss:Size="11"
+                      ss:Color="#000000"/>
+                <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+                <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+            </Style>
+            <Style ss:ID="s65">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+                      ss:Bold="1"/>
+                <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+            </Style>
+            <Style ss:ID="s60">
+                <NumberFormat ss:Format="$#,##0.00"/>
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+                      ss:Bold="1"/>
+                <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+            </Style>
+            <Style ss:ID="s66">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+                      ss:Bold="1"/>
+                <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+            </Style>
+            <Style ss:ID="s67"> 
+                <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="0"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="0"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="0"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="0"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="13" ss:Color="#FFFF00"
+                      ss:Bold="1"/>
+                <Interior ss:Color="#000000" ss:Pattern="Solid"/>
+            </Style>
+            <Style ss:ID="s61">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+                <NumberFormat ss:Format="$#,##0.00"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="16" ss:Color="#000000"
+                      ss:Bold="1"/>
+            </Style>
+            <Style ss:ID="s69">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+                <NumberFormat/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="16" ss:Color="#000000"
+                      ss:Bold="1"/>
+            </Style>
+            <Style ss:ID="s96">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+                <NumberFormat/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="12" ss:Color="#000000"
+                      ss:Bold="1" ss:Underline="Single"/>
+            </Style>
+            <Style ss:ID="s88">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+                <NumberFormat ss:Format="$#,##0.00"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="12" ss:Color="#000000"/>
+            </Style>
+            <Style ss:ID="s89">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+                <NumberFormat />
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="12" ss:Color="#000000"/>
+            </Style>
+            <Style ss:ID="s78">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+                <NumberFormat ss:Format="0.0%"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="12" ss:Color="#000000"/>
+            </Style>
+            <Style ss:ID="s70">
+                <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="12" ss:Color="#000000"/>
+            </Style>
+            <Style ss:ID="s75">
+                <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+                <Borders>
+                    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+                    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+                </Borders>
+                <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+                      ss:Bold="1"/>
+                <Interior ss:Color="#FFF38E" ss:Pattern="Solid"/>
+            </Style>
+        </Styles>
+        
+        <Names>
+            <NamedRange ss:Name="Name_Column" ss:RefersTo="=Products!R2C1:R{!productCount + 1}C1"/>
+            <NamedRange ss:Name="Eight_Percentage" ss:RefersTo="=Products!R2C3:R{!productCount + 1}C3"/>
+            <NamedRange ss:Name="Ten_Percentage" ss:RefersTo="=Products!R2C4:R{!productCount + 1}C4"/>
+            <NamedRange ss:Name="Fifteen_Percentage" ss:RefersTo="=Products!R2C5:R{!productCount + 1}C5"/>
+            <NamedRange ss:Name="Twenty_Percentage" ss:RefersTo="=Products!R2C6:R{!productCount + 1}C6"/>
+            <NamedRange ss:Name="Twenty_Five_Percentage" ss:RefersTo="=Products!R2C7:R{!productCount + 1}C7"/>
+            <NamedRange ss:Name="Thirty_Percentage" ss:RefersTo="=Products!R2C8:R{!productCount + 1}C8"/>
+            <NamedRange ss:Name="Thirty_Four_Percentage" ss:RefersTo="=Products!R2C9:R{!productCount + 1}C9"/>
+            <NamedRange ss:Name="Total_Column" ss:RefersTo="=Products!R2C12:R{!productCount + 1}C12"/>
+            <NamedRange ss:Name="Spread_Column" ss:RefersTo="=Products!R2C13:R{!productCount + 1}C13"/>
+            <NamedRange ss:Name="Comm_Amount" ss:RefersTo="=Products!R2C14:R{!productCount + 1}C14"/>
+            <NamedRange ss:Name="Split_2" ss:RefersTo="=Products!R2C15:R{!productCount + 1}C15"/>
+            <NamedRange ss:Name="Split_3" ss:RefersTo="=Products!R2C16:R{!productCount + 1}C16"/>
+   
+        </Names> 
+        
+        <Worksheet ss:Name="Products">
+            <Table ss:ExpandedColumnCount="16" ss:ExpandedRowCount="{!productCount + 115}" x:FullColumns="1"
+                   x:FullRows="1" ss:DefaultColumnWidth="65">
+                
+                <Column ss:AutoFitWidth="0" ss:Width="520"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="130"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="180"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                <Column ss:AutoFitWidth="0" ss:Width="105"/>
+                
+                <Row ss:AutoFitHeight="0" ss:Height="21.75">
+                    <Cell ss:StyleID="s67"><Data ss:Type="String">Birch Gold Group</Data></Cell>
+                    <Cell ss:StyleID="s67"/>
+                    <Cell ss:StyleID="s67"/>
+                    <Cell ss:StyleID="s67" ss:MergeAcross="12"><Data ss:Type="String">{!lastUpdated}</Data></Cell>
+                </Row>
+                <Row ss:AutoFitHeight="0" ss:Height="21.75">
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                </Row>
+                <Row ss:AutoFitHeight="0" ss:Height="21.75">
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                </Row>
+                <Row ss:AutoFitHeight="0" ss:Height="21.75">
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s65"><Data ss:Type="String">GOLD SPOT</Data></Cell>
+                    <Cell ss:StyleID="s60"><Data ss:Type="Number">{!priceWrapper.spotPrices.goldAsk}</Data></Cell>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s75"><Data ss:Type="String">CHANGE</Data></Cell>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                </Row>
+                <Row ss:AutoFitHeight="0" ss:Height="21.75">
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s65"><Data ss:Type="String">SILVER SPOT</Data></Cell>
+                    <Cell ss:StyleID="s60"><Data ss:Type="Number">{!priceWrapper.spotPrices.silverAsk}</Data></Cell>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s75"><Data ss:Type="String">BELOW</Data></Cell>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                    <Cell ss:StyleID="s34"/>
+                </Row>
+                
+                <apex:repeat value="{!excelDataList}" var="productInfoMain">
+                    <Row ss:AutoFitHeight="0" ss:Height="21.75">
+                        <Cell ss:StyleID="s69"><Data ss:Type="String">{!productInfoMain.categoryName}</Data></Cell>
+                        <Cell ss:StyleID="s96"><Data ss:Type="String">&lt; $10k Cash Minimum</Data></Cell>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                    </Row>
+                    <apex:repeat value="{!productInfoMain.subCategoryList}" var="productInfo">
+                    <Row ss:AutoFitHeight="0" ss:Height="21.75">
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">Type</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">Cost</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">8%</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">10%</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">15%</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">20%</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">25%</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">30%</Data></Cell>
+                        <Cell ss:StyleID="s98"><Data ss:Type="String">34%</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">Quantity Sold</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">Sale Price</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">Total</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">Spread</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">Commissionable Amount</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">Split 2</Data></Cell>
+                        <Cell ss:StyleID="s68"><Data ss:Type="String">Split 3</Data></Cell>
+                    </Row>
+                    <apex:repeat value="{!productInfo.productDetails}" var="product">
+                        <Row ss:Height="18">
+                            <Cell ss:StyleID="s70">
+                                <Data ss:Type="String">{!product.productName}</Data>
+                                <NamedCell ss:Name="Name_Column"/>
+                            </Cell>
+                            <Cell ss:StyleID="s88">
+                                <Data ss:Type="Number">{!product.totalCost}</Data>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-1]/(1-8%)),2)">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Eight_Percentage"/>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-2]/(1-10%)),2)">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Ten_Percentage"/>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-3]/(1-15%)),2)">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Fifteen_Percentage"/>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-4]/(1-20%)),2)">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Twenty_Percentage"/>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-5]/(1-25%)),2)">
+                                <Data ss:Type="Number"></Data> 
+                                <NamedCell ss:Name="Twenty_Five_Percentage"/>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-6]/(1-30%)),2)">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Thirty_Percentage"/>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-7]/(1-R[{!product.negativeIndex}]C)),2)">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Thirty_Four_Percentage"/>
+                            </Cell>
+                            <Cell ss:StyleID="s89">
+                                <Data ss:Type="Number"></Data>
+                            </Cell>
+                            <Cell ss:StyleID="s88">
+                                <Data ss:Type="Number"></Data>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-1]*RC[-2]),2)">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Total_Column"/>
+                            </Cell>
+                            <Cell ss:StyleID="s78" ss:Formula="=(RC[-2]-RC[-11])/RC[-2]">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Spread_Column"/>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=(RC[-2]-(RC[-4]*RC[-12]))">
+                                <Data ss:Type="Number"></Data> 
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-1]/2),2)">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Split_2"/>
+                            </Cell>
+                            <Cell ss:StyleID="s88" ss:Formula="=ROUND((RC[-2]/3),2)">
+                                <Data ss:Type="Number"></Data>
+                                <NamedCell ss:Name="Split_3"/>
+                            </Cell>
+                        </Row>
+                    </apex:repeat> 
+                    </apex:repeat>
+                    <Row ss:Height="18">
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/> 
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"><Data ss:Type="String">Total</Data></Cell>
+                        <Cell ss:StyleID="s61" ss:Formula="=SUM(R[-1]C:R[-{!productInfoMain.itemCount}]C)"><Data ss:Type="Number"></Data></Cell>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                        <Cell ss:StyleID="s69"/>
+                    </Row>
+                </apex:repeat>
+                <Row ss:Height="18">
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"><Data ss:Type="String">Deal Total</Data></Cell>
+                    <Cell ss:StyleID="s61" ss:Formula="=SUM(R[-1]C:R[-1]C+R[{!total_SNGC}]C:R[{!total_SNGC}]C+R[{!total_BS}]C:R[{!total_BS}]C+R[{!total_BG}]C:R[{!total_BG}]C+R[{!total_PAE}]C:R[{!total_PAE}]C+R[{!total_NG}]C:R[{!total_NG}]C)"><Data ss:Type="Number"></Data></Cell>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                    <Cell ss:StyleID="s69"/>
+                </Row>
+            </Table>
+            
+            <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+                <PageLayoutZoom>0</PageLayoutZoom>
+                <Selected/>
+                <FreezePanes/>
+                <FrozenNoSplit/>
+                <SplitHorizontal>1</SplitHorizontal>
+                <TopRowBottomPane>1</TopRowBottomPane>
+                <ActivePane>2</ActivePane>
+                <Panes>
+                    <Pane>
+                        <Number>3</Number>
+                    </Pane>
+                </Panes>
+                <ProtectObjects>False</ProtectObjects>
+                <ProtectScenarios>False</ProtectScenarios>
+            </WorksheetOptions>
+        </Worksheet>
+    </Workbook>    
+</apex:page>

@@ -1,0 +1,195 @@
+<apex:page standardController="Purchase_Order__c"
+            applyBodyTag="false"
+            showHeader="false"
+            sidebar="false"
+            renderAs="pdf">
+    
+    <head>
+        <title>Custodian Invoice</title>
+        <style>
+            @page {
+                size: 215.9mm 279.4mm;
+                margin: 22px;
+                margin-top: 180px;
+                margin-bottom: 70px;
+                @top-center {
+                    content: element(header);
+                }
+                @bottom-left {
+                    content: element(footer);
+                }
+            }
+            .page:before {
+                content: counter(page);
+            }
+            .pages:after {
+                content: counter(pages);
+            } 
+            div.header {
+                padding-top: 18px;
+                position: running(header);
+            }
+            
+            div.footer {
+                padding-bottom: 18px;
+                position: running(footer);
+            }
+            
+            .bold_text{
+                font-weight: bold;
+                line-height: 15px;
+            }
+            
+            hr{
+            	width: 90%;
+            	align: center;
+            }
+            
+            .total{
+            	background-color: black;
+            	color: white;
+            }
+            
+            .customer thead tr {
+            	background-color: black;
+            	color: white;
+            	text-align: center;
+            }
+            
+            .customer tbody tr {
+            	background-color: #CDCDCD;
+            	text-align: center;
+            }
+            
+            .items thead tr {
+            	background-color: #29a8e1;
+            	color: white;
+            	text-align: center;
+            }
+            
+            th.all_border, td.all_border{
+            	border: 1px solid white;
+            	padding-right: 6px;
+            	padding-left: 6px;
+            }
+            
+            .fields tr td{            
+                padding-bottom: 12px;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="header">
+            <table cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td width="25%" valign="top" align="left"><img width="100%" src="{!URLFOR($Resource.LogoBI)}" /></td>
+                    <td width="37.5%" valign="center">
+                        &nbsp;
+                    </td>
+                    <td width="37.5%" valign="top" align="left">&nbsp;</td>
+                </tr>
+                <tr>
+                	<td colspan="3" valign="top">
+                        <span class="bold_text">BirIRA</span><br/>
+                        3600 W. Olive Ave., Suite 730<br/>
+                        Burbank, CA 91505<br/>
+                        <span class="bold_text">Phone: </span>(800) 355-2116<br/>
+                        <span class="bold_text">Fax: </span>(800) 965-3620
+                    </td>
+                </tr>
+            </table>
+            <br/>
+        </div>
+        
+        <div>
+            <table cellspacing="0" border="0" width="100%" class="fields">
+                <tr>
+                    <td width="30%"><span class="bold_text">Order #:</span> <br/></td>
+                    <td width="70%" >{!Purchase_Order__c.Order__c}</td>
+                </tr>
+                <tr>
+                	<td width="30%" ><span class="bold_text">Date:</span></td>
+                   	<td width="70%" ><apex:outputText value="{0, date, M'-'d'-'yyyy}"><apex:param value="{!today()}" /></apex:outputText></td>
+             	</tr>
+                <tr>
+                	<td width="30%" valign="top"><span class="bold_text">Customer Information:</span> <br/></td>
+                    <td width="70%" >
+                    	{!Purchase_Order__c.Contact__r.Name}
+                     	<br/>{!Purchase_Order__c.Client__r.BillingStreet}
+                       	<br/> {!Purchase_Order__c.Client__r.BillingCity}, {!Purchase_Order__c.Client__r.BillingState} {!Purchase_Order__c.Client__r.BillingPostalCode}
+                        <br/>Strata Account # {!Purchase_Order__c.Custodian_Lookup__r.Strata_Account__c}
+                  	</td>
+              	</tr>
+            </table>
+        </div>
+        
+        <br/><br/><br/><br/>
+        
+        <div>
+            <table border="0" cellspacing="0" width="100%" class="items">
+                <thead>
+                        <tr>
+                            <th class="all_border" width="10%">Nro.</th>
+                            <th class="all_border" width="18%">Type</th>
+                            <th class="all_border" width="18%">Quantity</th>
+                            <th class="all_border" width="18%">Spot Price</th>
+                            <th class="all_border" width="18%">Total Cost</th>
+                            <th class="all_border" width="18%">BitIRA Fee</th>
+                        </tr>
+             	</thead>
+                <tbody>
+                    <apex:variable var="count" value="{!1}" />
+                    <apex:repeat value="{!Purchase_Order__c.Purchase_Order_Line_Items__r}" var="poli" >                   
+                            <tr>
+                                <td  class="all_border" align="right">{!count}</td>
+                                <td  class="all_border">{!poli.Coin__r.Name}</td>
+                                <td  class="all_border" align="right">{!poli.Quantity__c}</td>
+                                <td  class="all_border" align="right"><apex:outputText value="${0, number,###,##0.00}"><apex:param value="{!poli.Unit_Price__c}" /></apex:outputText></td>
+                                <td  class="all_border" align="right"><apex:outputText value="${0, number,###,##0.00}"><apex:param value="{!poli.Total_Price__c}" /></apex:outputText></td>
+                                <td  class="all_border" align="right">${!Purchase_Order__c.BitIRA_Fee_Average__c}</td>
+                            </tr>
+                        	<apex:variable var="count" value="{!count + 1}" />
+                    </apex:repeat>
+                	<tr style="height: 20px"></tr>
+                    <tr class="total">
+                        <td width="10%">&nbsp;<b>Total: </b></td>
+                        <td width="18%">&nbsp;</td>
+                        <td width="18%">&nbsp;</td>
+                        <td width="18%">&nbsp;</td>
+                    	<td width="18%" align="right" style="padding-right: 6px;"><apex:outputText value="${0, number,###,##0.00}"><apex:param value="{!Purchase_Order__c.Total_Price__c}" /></apex:outputText></td>
+                        <td width="18%" align="right" style="padding-right: 6px;"><apex:outputText value="${0, number,###,##0.00}"><apex:param value="{!Purchase_Order__c.BitRIA_Fee_Amount__c}" /></apex:outputText></td>
+                   	</tr>    
+                </tbody>
+            </table>
+        </div>
+        
+        <br/><br/><br/>
+        
+        <div>
+            <p>
+                * Trade pricing as verbally confirmed/recorded between BitIRA and customer on <b><apex:outputText value="{0, date, M'/'d'/'yyyy' at 'hh:mm a}"><apex:param value="{!Purchase_Order__c.CreatedDate}" /></apex:outputText></b>
+            </p>
+            <p>
+                The Digital Currency Transaction Customer Agreement that you signed governs the terms of this sale. ALL SALES ARE FINAL.<br/>
+                Payment for your purchase has been (or will be) provided by your IRA custodian; please do not remit payment directly.
+            </p>
+            <p>
+                The price on this invoice includes BitIRA's spread (or fee) on the transaction, which covers BitIRA's operating expenses (for example, rent, salaries, 
+                marketing expenditures) and BitIRA's profit.
+            </p>
+            <p>
+                In Bit IRA's opinion, Digital Currencies are a highly speculative investment. Customer should have the financial flexibility and resources, and the risk 
+                tolerance, to lose Customer's entire investment in Digital Cyrrency. Historical perfomance in no guarantee of future results. The decision to purchase, which 
+                Digital Currencies to purchase, and how much of each, are customer's alone.
+            </p>
+            <p>
+                BitIRA is not an investment specialist, tax specialist, financial planner (certified or otherwise), or retirement advisor, and BitIRA does not provide 
+                investment advice, tax advice, financial planning services, or retirement planning or retirement specific advice. BitIRA makes no representation or warranty 
+                that purchasing Digital Currency for placement in an individual retirement account complies with government regulations or statues or taht current rules and 
+                statues will not charge.
+            </p>
+        </div>
+    </body>
+    
+</apex:page>

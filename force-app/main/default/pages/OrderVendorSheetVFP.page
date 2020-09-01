@@ -1,0 +1,177 @@
+<apex:page standardController="Purchase_Order__c"
+            applyBodyTag="false"
+            showHeader="false"
+            sidebar="false"
+            renderAs="pdf">
+    
+    <head>
+        <title>Order Vendor Sheet</title>
+        <style>
+            @page {
+                size: 215.9mm 279.4mm;
+                margin: 22px;
+                margin-top: 180px;
+                margin-bottom: 70px;
+                @top-center {
+                    content: element(header);
+                }
+                @bottom-left {
+                    content: element(footer);
+                }
+            }
+            .page:before {
+                content: counter(page);
+            }
+            .pages:after {
+                content: counter(pages);
+            } 
+            div.header {
+                padding-top: 18px;
+                position: running(header);
+            }
+            
+            div.footer {
+                padding-bottom: 18px;
+                position: running(footer);
+            }
+            
+            .bold_text{
+                font-weight: bold;
+                line-height: 15px;
+            }
+            
+            hr{
+            	width: 90%;
+            	align: center;
+            }
+            
+            .total{
+            	background-color: black;
+            	color: white;
+            }
+            
+            .customer thead tr {
+            	background-color: black;
+            	color: white;
+            	text-align: center;
+            }
+            
+            .customer tbody tr {
+            	background-color: #CDCDCD;
+            	text-align: center;
+            }
+            
+            .items thead tr {
+            	background-color: #a4742c;
+            	color: white;
+            	text-align: center;
+            }
+            
+            th.all_border, td.all_border{
+            	border: 1px solid white;
+            	padding-right: 6px;
+            	padding-left: 6px;
+            }
+            
+            .fields tr td{            
+                padding-bottom: 12px;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="header">
+            <table cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td width="25%" valign="top" align="left"><img width="100%" src="{!URLFOR($Resource.LogoBG)}" /></td>
+                    <td width="37.5%" valign="center">
+                        &nbsp;
+                    </td>
+                    <td width="37.5%" valign="top" align="left">&nbsp;</td>
+                </tr>
+            </table>
+            <br/>
+        </div>
+        
+        <div>
+            <table cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td width="40%" valign="top">
+                        <span class="bold_text">Birch Gold Group</span><br/>
+                        3600 W. Olive Ave., Suite 730<br/>
+                        Burbank, CA 91505<br/>
+                        <span class="bold_text">Phone: </span>(800) 355-2116<br/>
+                        <span class="bold_text">Fax: </span>(800) 965-3620
+                    </td>
+                    <td width="60%" valign="top">
+                        <table cellspacing="0" border="0" width="100%" class="fields">
+                            <tr>
+                                <td width="50%" ><span class="bold_text">Order #:</span> <br/></td>
+                                <td width="50%" >{!Purchase_Order__c.Order__c}</td>
+                            </tr>
+                            <tr>
+                                <td width="50%" ><span class="bold_text">Date:</span></td>
+                                <td width="45%" ><apex:outputText value="{0, date, M'-'d'-'yyyy}"><apex:param value="{!today()}" /></apex:outputText></td>
+                            </tr>
+                            <tr>
+                                <td width="50%" valign="top"><span class="bold_text">Shipping Address:</span> <br/></td>
+                                <td width="50%" >
+                                    {!Purchase_Order__c.Contact__r.Name} - {!Purchase_Order__c.Custodian_lookup__r.Name}
+                                    <br/>IRA Acct: {!Purchase_Order__c.IRA_Account__c}	
+                                    <br/>{!Purchase_Order__c.Custodian_lookup__r.BillingStreet}
+                        			<br/> {!Purchase_Order__c.Custodian_lookup__r.BillingCity}, {!Purchase_Order__c.Custodian_lookup__r.BillingState} {!Purchase_Order__c.Custodian_lookup__r.BillingPostalCode}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%" valign="top"><span class="bold_text">Customer Account #:</span> <br/></td>
+                                <td width="50%" >{!Purchase_Order__c.Client__r.Account_Number__c}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"  valign="top"><span class="bold_text">Comments or Special Instructions: </span>{!Purchase_Order__c.IRA_Queue__r.Depository__c}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+            </table>
+        </div>
+        
+        <br/><br/><br/>
+        
+        <div>
+            <table border="0" cellspacing="0" width="100%" class="items">
+                <thead>
+                        <tr>
+                            <th class="all_border" width="15%">Nro.</th>
+                            <th class="all_border" width="25%">Quantity</th>
+                            <th class="all_border" width="35%">Coin</th>
+                            <th class="all_border" width="25%">Grade</th>
+                        </tr>
+             	</thead>
+                <tbody>
+                    <apex:variable var="count" value="{!1}" />
+                    <apex:repeat value="{!Purchase_Order__c.Purchase_Order_Line_Items__r}" var="poli" >                   
+                            <tr>
+                                <td  class="all_border" align="right">{!count}</td>
+                                <td  class="all_border" align="right">{!poli.Quantity__c}</td>
+                                <td  class="all_border">{!poli.Coin__r.Name}</td>
+                                <td  class="all_border">{!poli.Grade__c}</td>
+                           	</tr>
+                        	<apex:variable var="count" value="{!count + 1}" />
+                    </apex:repeat>
+                	<tr style="height: 2px; background-color: black;">
+                    	<td colspan="4"></td>
+                    </tr>    
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <hr/>
+            <p style="text-align: center;">
+                3500 West Olive Ave., Suite 730, Burbank, CA 951505 | (800) 355-2116 | www.BirchGold.com
+            </p>
+        </div>
+    </body>
+    
+</apex:page>
